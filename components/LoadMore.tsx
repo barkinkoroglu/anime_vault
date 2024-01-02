@@ -14,14 +14,25 @@ export type AnimeCard = JSX.Element;
 function LoadMore() {
   const { ref, inView } = useInView();
   const [data, setData] = useState<AnimeCard[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     if (inView) {
-      fetchAnime(page).then((res) => {
-        setData([...data, ...res]);
-        page++;
-      });
+      setIsLoading(true);
+      const delay = 500;
+
+      const timeoutId = setTimeout(() => {
+        fetchAnime(page).then((res) => {
+          setData([...data, ...res]);
+          page++;
+        });
+
+        setIsLoading(false);
+      }, delay);
+
+      return () => clearTimeout(timeoutId);
     }
-  }, [inView, data]);
+  }, [inView, data, isLoading]);
 
   return (
     <>
